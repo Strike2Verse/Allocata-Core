@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 1: building the local Docker Compose stack on `chore/infra-compose-stack`
-- Next: Postgres service
+- Phase 1: building the local Docker Compose stack on `chore/infra-postgres-service`
+- Next: Redis service
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -11,7 +11,7 @@
 - [x] Added README outline and problem statement (PR #2)
 - [x] Added `.env.example` with placeholder settings
 - [x] Added `.gitattributes` for consistent line endings
-- [ ] Docker Compose service: Postgres
+- [x] Docker Compose service: Postgres (16.15, healthcheck with `pg_isready`)
 - [ ] Docker Compose service: Redis
 - [ ] Docker Compose service: RabbitMQ
 - [ ] Docker Compose service: PgBouncer
