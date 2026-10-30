@@ -36,7 +36,8 @@ Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · D
 _(coming soon)_
 
 ## Status
-Under active development.
+Under active development. See [docs/PROGRESS.md](docs/PROGRESS.md) for
+what is done and what comes next.
 
 ## License
 MIT. See [LICENSE](LICENSE).
