@@ -67,6 +67,15 @@ docker exec -it allocata-redis redis-cli ping
 The first asks for the PostgreSQL password from `.env` and prints the
 version. The second prints `PONG`.
 
+### Local services
+| Service | Port | Use |
+|---------|------|-----|
+| PostgreSQL | 5432 | Direct database access (admin, migrations) |
+| PgBouncer | 6432 | Pooled database connections, used by the app |
+| Redis | 6379 | Cache, rate limits and short-lived locks |
+| RabbitMQ | 5672 | Messaging (AMQP) |
+| RabbitMQ UI | 15672 | Management dashboard at http://localhost:15672, log in with the RabbitMQ user from `.env` |
+
 ## Status
 Under active development, built step by step in phases.
 
