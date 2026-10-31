@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 2 in progress (on `chore/app-spring-boot-skeleton`)
-- Next: configuration from environment variables
+- Phase 2 in progress (on `chore/app-env-config`)
+- Next: database connection through PgBouncer (6432)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -20,7 +20,7 @@
 
 ## Phase 2: Spring Boot app connected to the stack
 - [x] Spring Boot skeleton (Spring Boot 4.1.2, Java 21, Maven wrapper 3.10.0, Web, Actuator health on 8080)
-- [ ] Configuration from environment variables, no secrets committed
+- [x] Configuration from environment variables (`.env` imported by Spring, `SERVER_PORT` with 8080 default, no secrets committed)
 - [ ] Database connection through PgBouncer (6432)
 - [ ] Flyway migrations directly on Postgres (5432), empty baseline
 - [ ] Redis and RabbitMQ connections, all health checks `UP`
