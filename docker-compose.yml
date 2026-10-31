@@ -56,6 +56,10 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       AUTH_TYPE: scram-sha-256
       LISTEN_PORT: 6432
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+      ADMIN_USERS: ${POSTGRES_USER}
     ports:
       - "6432:6432"
     restart: unless-stopped
