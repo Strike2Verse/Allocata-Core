@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 1: building the local Docker Compose stack on `chore/infra-rabbitmq-service`
-- Next: PgBouncer service
+- Phase 1: building the local Docker Compose stack on `chore/infra-pgbouncer-service`
+- Next: whole stack running and verified
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -14,7 +14,7 @@
 - [x] Docker Compose service: Postgres (16.15, healthcheck with `pg_isready`)
 - [x] Docker Compose service: Redis (7.4.12, AOF persistence, healthcheck with `redis-cli ping`)
 - [x] Docker Compose service: RabbitMQ (4.4.0 with management UI on 15672, fixed hostname, healthcheck with `rabbitmq-diagnostics ping`)
-- [ ] Docker Compose service: PgBouncer
+- [x] Docker Compose service: PgBouncer (1.26.1 on 6432, transaction pooling, starts after healthy Postgres, healthcheck with `pg_isready`)
 - [ ] Whole stack running and verified
 - [ ] README: Getting Started
 
