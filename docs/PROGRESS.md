@@ -2,7 +2,7 @@
 
 ## Current position
 - Phase 2 in progress (on `chore/app-spring-boot-skeleton`)
-- Next: generate the Spring Boot project with Maven
+- Next: configuration from environment variables
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -19,7 +19,7 @@
 - [x] README: Getting Started (prerequisites, env setup, start and checks, ports, cleanup)
 
 ## Phase 2: Spring Boot app connected to the stack
-- [ ] Spring Boot skeleton (Java 21, Maven wrapper, Web, Actuator health on 8080)
+- [x] Spring Boot skeleton (Spring Boot 4.1.2, Java 21, Maven wrapper 3.10.0, Web, Actuator health on 8080)
 - [ ] Configuration from environment variables, no secrets committed
 - [ ] Database connection through PgBouncer (6432)
 - [ ] Flyway migrations directly on Postgres (5432), empty baseline
