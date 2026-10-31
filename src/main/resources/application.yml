@@ -1,6 +1,8 @@
 spring:
   application:
     name: allocata-core
+  config:
+    import: optional:file:.env[.properties]
 
 server:
   port: 8080
