@@ -46,6 +46,20 @@ services:
       retries: 10
     restart: unless-stopped
 
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.26.1-p0
+    container_name: allocata-pgbouncer
+    environment:
+      DB_HOST: postgres
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      AUTH_TYPE: scram-sha-256
+      LISTEN_PORT: 6432
+    ports:
+      - "6432:6432"
+    restart: unless-stopped
+
 volumes:
   pgdata:
   redisdata:
