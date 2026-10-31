@@ -62,6 +62,9 @@ services:
       ADMIN_USERS: ${POSTGRES_USER}
     ports:
       - "6432:6432"
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
