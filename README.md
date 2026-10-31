@@ -33,7 +33,11 @@ _(coming soon)_
 Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · Docker Compose
 
 ## Getting Started
-_(coming soon)_
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  (or Docker Engine with Compose v2)
+- [Git](https://git-scm.com/)
 
 ## Status
 Under active development, built step by step in phases.
