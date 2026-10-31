@@ -8,17 +8,18 @@ and records every payment in a balanced double-entry ledger.
 
 ## Problem Statement
 
-When many users request the same scarce asset at the same moment, naive
-systems break in predictable ways. Allocata Core is built to handle each one:
+When thousands of buyers try to get the same seats at the same moment, naive
+ticketing systems break in predictable ways. Allocata Core is built to handle
+each one:
 
 | Problem | What goes wrong | Approach |
 |---------|-----------------|----------|
-| Double booking | Two requests both see "1 left" and both succeed | Atomic check-and-claim in a Redis Lua script |
-| Dual write | Data is saved but the follow-up event is lost in a crash | Transactional outbox with a relay |
-| Cascading failure | A slow external provider blocks every worker | Circuit breaker, retries and a dead-letter queue |
-| Money drift | Concurrent balance updates collide or double-charge | Immutable double-entry ledger |
-| Retry duplicates | A timeout or double-click repeats the same action | Idempotency-Key header |
-| Overload | One client floods the API | Rate limiting and connection pooling |
+| Double booking | Two buyers both see "1 seat left" and both pay | Atomic check-and-claim in a Redis Lua script |
+| Dual write | The order is saved but the "ticket confirmed" event is lost in a crash | Transactional outbox with a relay |
+| Cascading failure | A slow payment or email provider blocks every checkout | Circuit breaker, retries and a dead-letter queue |
+| Money drift | Concurrent payments and refunds collide or double-charge | Immutable double-entry ledger |
+| Retry duplicates | A buyer double-clicks "Pay" and is charged twice | Idempotency-Key header |
+| Overload | A bot floods the API when the sale opens | Rate limiting and connection pooling |
 
 **Example:** an asset has 5 units and 1,000 users claim it at once.
 Exactly 5 receive a 10-minute lease, the rest are told it is unavailable
