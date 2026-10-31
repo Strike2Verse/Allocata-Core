@@ -21,9 +21,9 @@ each one:
 | Retry duplicates | A buyer double-clicks "Pay" and is charged twice | Idempotency-Key header |
 | Overload | A bot floods the API when the sale opens | Rate limiting and connection pooling |
 
-**Example:** an asset has 5 units and 1,000 users claim it at once.
-Exactly 5 receive a 10-minute lease, the rest are told it is unavailable
-and may join a waitlist. Unconfirmed leases expire and return to stock.
+**Example:** 5,000 seats go on sale at 10:00 and 50,000 buyers click at
+once. Each seat goes to exactly one buyer and is held for 10 minutes during
+checkout. Unpaid seats are released to the next buyer on the waitlist.
 
 > This list reflects the current scope. It will evolve as the project
 > develops: new problems may be added, approaches refined, and items
