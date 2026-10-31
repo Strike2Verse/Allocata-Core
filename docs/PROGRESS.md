@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 1 complete (finished on `docs/repo-getting-started`)
-- Next: plan Phase 2
+- Phase 2 in progress (on `chore/app-spring-boot-skeleton`)
+- Next: configuration from environment variables
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -17,6 +17,14 @@
 - [x] Docker Compose service: PgBouncer (1.26.1 on 6432, transaction pooling, starts after healthy Postgres, healthcheck with `pg_isready`)
 - [x] Whole stack running and verified (fresh `down -v` + `up -d`, all 4 services healthy)
 - [x] README: Getting Started (prerequisites, env setup, start and checks, ports, cleanup)
+
+## Phase 2: Spring Boot app connected to the stack
+- [x] Spring Boot skeleton (Spring Boot 4.1.2, Java 21, Maven wrapper 3.10.0, Web, Actuator health on 8080)
+- [ ] Configuration from environment variables, no secrets committed
+- [ ] Database connection through PgBouncer (6432)
+- [ ] Flyway migrations directly on Postgres (5432), empty baseline
+- [ ] Redis and RabbitMQ connections, all health checks `UP`
+- [ ] README: how to run the app
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
