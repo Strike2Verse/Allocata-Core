@@ -51,6 +51,22 @@ ignored by Git and must never be committed.
 PostgreSQL and RabbitMQ create their users from `.env` on first start only.
 To change a password later, reset the data with `docker compose down -v`.
 
+### 2. Start the stack
+```sh
+docker compose up -d
+docker compose ps
+```
+After about 30 seconds every service shows `(healthy)`. PgBouncer waits
+until PostgreSQL is healthy before it starts.
+
+Quick checks:
+```sh
+docker exec -it allocata-pgbouncer psql -h localhost -p 6432 -U allocata -d allocata -c "select version();"
+docker exec -it allocata-redis redis-cli ping
+```
+The first asks for the PostgreSQL password from `.env` and prints the
+version. The second prints `PONG`.
+
 ## Status
 Under active development, built step by step in phases.
 
