@@ -1,8 +1,10 @@
 # Allocata Core
 
-A backend leasing engine that allocates limited assets under heavy
-concurrent demand: exact allocation, short-lived holds, fair waitlists,
-reliable event delivery and a balanced financial ledger.
+A high-concurrency allocation engine, built around event ticketing.
+When a sale opens and thousands of buyers click at once, it gives each
+seat to exactly one buyer, holds it for 10 minutes during checkout,
+moves unpaid seats to a fair waitlist, delivers every event reliably
+and records every payment in a balanced double-entry ledger.
 
 ## Problem Statement
 
