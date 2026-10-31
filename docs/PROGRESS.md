@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 1: building the local Docker Compose stack on `chore/infra-pgbouncer-service`
-- Next: whole stack running and verified
+- Phase 1 complete (finished on `docs/repo-getting-started`)
+- Next: plan Phase 2
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -15,8 +15,8 @@
 - [x] Docker Compose service: Redis (7.4.12, AOF persistence, healthcheck with `redis-cli ping`)
 - [x] Docker Compose service: RabbitMQ (4.4.0 with management UI on 15672, fixed hostname, healthcheck with `rabbitmq-diagnostics ping`)
 - [x] Docker Compose service: PgBouncer (1.26.1 on 6432, transaction pooling, starts after healthy Postgres, healthcheck with `pg_isready`)
-- [ ] Whole stack running and verified
-- [ ] README: Getting Started
+- [x] Whole stack running and verified (fresh `down -v` + `up -d`, all 4 services healthy)
+- [x] README: Getting Started (prerequisites, env setup, start and checks, ports, cleanup)
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.

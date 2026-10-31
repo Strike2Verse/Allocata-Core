@@ -33,11 +33,67 @@ _(coming soon)_
 Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · Docker Compose
 
 ## Getting Started
-_(coming soon)_
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  (or Docker Engine with Compose v2)
+- [Git](https://git-scm.com/)
+
+### 1. Configure
+```sh
+git clone https://github.com/Strike2Verse/Allocata-Core.git
+cd Allocata-Core
+cp .env.example .env
+```
+Replace every `change_me` in `.env` with your own password. `.env` is
+ignored by Git and must never be committed.
+
+PostgreSQL and RabbitMQ create their users from `.env` on first start only.
+To change a password later, reset the data with `docker compose down -v`.
+
+### 2. Start the stack
+```sh
+docker compose up -d
+docker compose ps
+```
+After about 30 seconds every service shows `(healthy)`. PgBouncer waits
+until PostgreSQL is healthy before it starts.
+
+Quick checks:
+```sh
+docker exec -it allocata-pgbouncer psql -h localhost -p 6432 -U allocata -d allocata -c "select version();"
+docker exec -it allocata-redis redis-cli ping
+```
+The first asks for the PostgreSQL password from `.env` and prints the
+version. The second prints `PONG`.
+
+### Local services
+| Service | Port | Use |
+|---------|------|-----|
+| PostgreSQL | 5432 | Direct database access (admin, migrations) |
+| PgBouncer | 6432 | Pooled database connections, used by the app |
+| Redis | 6379 | Cache, rate limits and short-lived locks |
+| RabbitMQ | 5672 | Messaging (AMQP) |
+| RabbitMQ UI | 15672 | Management dashboard at http://localhost:15672, log in with the RabbitMQ user from `.env` |
+
+### 3. Stop and clean up
+```sh
+docker compose stop      # pause, keep containers and data
+docker compose down      # remove containers, keep data in volumes
+docker compose down -v   # remove containers and all data
+```
+To remove the downloaded images as well, use
+`docker compose down -v --rmi all`.
 
 ## Status
-Under active development. See [docs/PROGRESS.md](docs/PROGRESS.md) for
-what is done and what comes next.
+Under active development, built step by step in phases.
+
+**Current phase:** Phase 1 (workstation and project skeleton) is complete.
+The local Docker Compose stack (PostgreSQL, PgBouncer, Redis, RabbitMQ)
+runs and is verified healthy. No application code yet.
+
+The full checklist, the current step and the decisions made along the way
+live in [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## License
 MIT. See [LICENSE](LICENSE).
