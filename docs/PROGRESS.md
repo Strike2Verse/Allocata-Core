@@ -20,6 +20,7 @@
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
+- Domain: event ticketing. Allocata is the allocation engine, ticketing is its use case.
 - Folders, `.editorconfig` and similar files are added only when a phase needs them.
 - Local passwords live only in `.env`, which Git ignores. The Postgres and
   RabbitMQ images create their users from it on first start.
