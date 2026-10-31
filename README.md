@@ -76,6 +76,15 @@ version. The second prints `PONG`.
 | RabbitMQ | 5672 | Messaging (AMQP) |
 | RabbitMQ UI | 15672 | Management dashboard at http://localhost:15672, log in with the RabbitMQ user from `.env` |
 
+### 3. Stop and clean up
+```sh
+docker compose stop      # pause, keep containers and data
+docker compose down      # remove containers, keep data in volumes
+docker compose down -v   # remove containers and all data
+```
+To remove the downloaded images as well, use
+`docker compose down -v --rmi all`.
+
 ## Status
 Under active development, built step by step in phases.
 
