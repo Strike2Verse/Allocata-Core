@@ -39,6 +39,18 @@ Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · D
   (or Docker Engine with Compose v2)
 - [Git](https://git-scm.com/)
 
+### 1. Configure
+```sh
+git clone https://github.com/Strike2Verse/Allocata-Core.git
+cd Allocata-Core
+cp .env.example .env
+```
+Replace every `change_me` in `.env` with your own password. `.env` is
+ignored by Git and must never be committed.
+
+PostgreSQL and RabbitMQ create their users from `.env` on first start only.
+To change a password later, reset the data with `docker compose down -v`.
+
 ## Status
 Under active development, built step by step in phases.
 
