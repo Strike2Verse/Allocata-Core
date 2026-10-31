@@ -36,8 +36,14 @@ Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · D
 _(coming soon)_
 
 ## Status
-Under active development. See [docs/PROGRESS.md](docs/PROGRESS.md) for
-what is done and what comes next.
+Under active development, built step by step in phases.
+
+**Current phase:** Phase 1, workstation and project skeleton. The local
+Docker Compose stack (PostgreSQL, PgBouncer, Redis, RabbitMQ) runs and is
+verified healthy. No application code yet.
+
+The full checklist, the current step and the decisions made along the way
+live in [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## License
 MIT. See [LICENSE](LICENSE).
