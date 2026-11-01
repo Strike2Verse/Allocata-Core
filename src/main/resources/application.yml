@@ -20,3 +20,7 @@ management:
     web:
       exposure:
         include: health
+  endpoint:
+    health:
+      # Local development only: switch to when-authorized before deploying.
+      show-details: always
