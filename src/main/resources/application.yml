@@ -3,6 +3,14 @@ spring:
     name: allocata-core
   config:
     import: optional:file:.env[.properties]
+  datasource:
+    # prepareThreshold=0 keeps the driver from using server-side prepared
+    # statements, which break under PgBouncer transaction pooling.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:6432}/${POSTGRES_DB}?prepareThreshold=0
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
 
 server:
   port: ${SERVER_PORT:8080}
@@ -12,3 +20,7 @@ management:
     web:
       exposure:
         include: health
+  endpoint:
+    health:
+      # Local development only: switch to when-authorized before deploying.
+      show-details: always
