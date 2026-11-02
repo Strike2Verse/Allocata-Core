@@ -1,8 +1,8 @@
 # Progress
 
 ## Current position
-- Phase 2 in progress (on `feat/app-flyway-baseline`)
-- Next: Redis and RabbitMQ connections, all health checks `UP`
+- Phase 2 in progress (on `feat/app-redis-rabbitmq`)
+- Next: README section on how to run the app
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -23,7 +23,7 @@
 - [x] Configuration from environment variables (`.env` imported by Spring, `SERVER_PORT` with 8080 default, no secrets committed)
 - [x] Database connection through PgBouncer (6432) (JDBC and Hikari pool, `prepareThreshold=0`, health `db` is `UP`, goes `DOWN` when PgBouncer stops)
 - [x] Flyway migrations directly on Postgres (5432), empty baseline (`V1__baseline` applied, `flyway_schema_history` has 1 row, separate Flyway connection bypasses PgBouncer)
-- [ ] Redis and RabbitMQ connections, all health checks `UP`
+- [x] Redis and RabbitMQ connections, all health checks `UP` (Redis and AMQP starters, host and port from env with localhost defaults, RabbitMQ credentials reused from `.env`, health shows `db`, `redis` and `rabbit` as `UP`)
 - [ ] README: how to run the app
 
 ## Decisions
