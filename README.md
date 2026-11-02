@@ -81,6 +81,10 @@ version. The second prints `PONG`.
 | RabbitMQ | 5672 | Messaging (AMQP) |
 | RabbitMQ UI | 15672 | Management dashboard at http://localhost:15672, log in with the RabbitMQ user from `.env` |
 
+All ports are bound to 127.0.0.1, so the services are reachable only from
+this machine. To open one to other devices, remove the `127.0.0.1:` prefix
+from its port in `docker-compose.yml`.
+
 ### 3. Run the app
 With the stack healthy, start the app from the project folder:
 ```sh
