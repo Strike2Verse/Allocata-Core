@@ -11,6 +11,12 @@ spring:
     password: ${POSTGRES_PASSWORD}
     hikari:
       maximum-pool-size: 5
+  flyway:
+    # Migrations bypass PgBouncer and go straight to Postgres, because
+    # transaction pooling can split a migration across connections.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_DIRECT_PORT:5432}/${POSTGRES_DB}
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
 server:
   port: ${SERVER_PORT:8080}

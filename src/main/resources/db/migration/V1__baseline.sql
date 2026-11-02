@@ -1,0 +1,1 @@
+-- Empty baseline: proves Flyway runs and records version 1. Tables come in later migrations.
