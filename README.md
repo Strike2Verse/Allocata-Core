@@ -41,6 +41,8 @@ Java 21 · Spring Boot · PostgreSQL 16 · Redis 7 · RabbitMQ · PgBouncer · D
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
   (or Docker Engine with Compose v2)
 - [Git](https://git-scm.com/)
+- [Java 21](https://adoptium.net/) (the app is built with the included
+  Maven wrapper, so Maven itself is not needed)
 
 ### 1. Configure
 ```sh
@@ -79,7 +81,36 @@ version. The second prints `PONG`.
 | RabbitMQ | 5672 | Messaging (AMQP) |
 | RabbitMQ UI | 15672 | Management dashboard at http://localhost:15672, log in with the RabbitMQ user from `.env` |
 
-### 3. Stop and clean up
+All ports are bound to 127.0.0.1, so the services are reachable only from
+this machine. To open one to other devices, remove the `127.0.0.1:` prefix
+from its port in `docker-compose.yml`.
+
+### 3. Run the app
+With the stack healthy, start the app from the project folder:
+```sh
+./mvnw spring-boot:run
+```
+On Windows PowerShell use `.\mvnw spring-boot:run`.
+
+The app reads its settings from `.env`, so no extra setup is needed. On
+first start Flyway creates its history table and applies the migrations in
+`src/main/resources/db/migration`. The app uses PgBouncer for normal
+queries, and Flyway connects straight to PostgreSQL.
+
+Check that it works by opening http://localhost:8080/actuator/health. The
+overall `status` and the `db`, `redis` and `rabbit` components should all
+be `UP`. To use another port, set `SERVER_PORT` in `.env`.
+
+To see what Flyway applied:
+```sh
+docker exec -it allocata-postgres psql -U allocata -d allocata -c "select version, description, success from flyway_schema_history;"
+```
+Use your own values if you changed `POSTGRES_USER` or `POSTGRES_DB` in
+`.env`.
+
+Stop the app with `Ctrl+C`.
+
+### 4. Stop and clean up
 ```sh
 docker compose stop      # pause, keep containers and data
 docker compose down      # remove containers, keep data in volumes
@@ -91,9 +122,10 @@ To remove the downloaded images as well, use
 ## Status
 Under active development, built step by step in phases.
 
-**Current phase:** Phase 1 (workstation and project skeleton) is complete.
-The local Docker Compose stack (PostgreSQL, PgBouncer, Redis, RabbitMQ)
-runs and is verified healthy. No application code yet.
+**Current phase:** Phase 2 (Spring Boot app connected to the stack) is
+complete. The local Docker Compose stack (PostgreSQL, PgBouncer, Redis,
+RabbitMQ) runs, and the app connects to all of it with an empty Flyway
+baseline. No ticketing features yet.
 
 The full checklist, the current step and the decisions made along the way
 live in [docs/PROGRESS.md](docs/PROGRESS.md).
