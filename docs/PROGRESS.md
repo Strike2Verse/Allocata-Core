@@ -2,8 +2,8 @@
 
 ## Current position
 - Phase 2 complete
-- Phase 3 in progress (migration test done on `feat/db-migration-test`)
-- Next: migration for the `tenants` table
+- Phase 3 in progress (migration test and `tenants` table done)
+- Next: migration for the `users` table
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -30,7 +30,7 @@
 ## Phase 3: Database basics, tenants and users
 Flyway itself was set up in Phase 2, so this phase starts from the empty baseline.
 - [x] Automated test that all migrations run on an empty database (Testcontainers with `postgres:16-alpine`, same image as compose, Flyway runs directly on a throwaway container, checks the applied count matches the migration files, nothing pending and no failed rows)
-- [ ] Migration: `tenants` table (organizers that own events)
+- [x] Migration: `tenants` table (organizers that own events) (`V2__create_tenants`, uuid primary key with `gen_random_uuid()`, `name`, unique `slug`, `created_at` as `timestamptz`)
 - [ ] Migration: `users` table with `tenant_id`, role (ADMIN or BUYER) and a unique email per tenant
 
 ## Decisions
