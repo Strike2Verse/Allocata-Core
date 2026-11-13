@@ -37,8 +37,9 @@ Flyway itself was set up in Phase 2, so this phase starts from the empty baselin
 ## Phase 4: Events and seats
 Event is the asset and seat is the item. Both tables are plain data; holds and orders come in Phase 5.
 - [ ] Migration: `events` table (`tenant_id` foreign key, `name`, `venue`, `starts_at`, `status` as DRAFT, ON_SALE or CLOSED with a check, index on `tenant_id`)
-- [ ] Migration: `seats` table (`event_id` foreign key, `label`, `price_cents`, `status` as AVAILABLE, HELD or SOLD with a check, unique `(event_id, label)`)
-- [ ] Test that foreign keys, check constraints and the unique seat label reject bad data
+- [ ] Migration: `seats` table (`tenant_id` and `event_id` foreign keys, `label`, `price_cents` with a check of 0 or more, `status` as AVAILABLE, HELD or SOLD with a check, `version` for optimistic locking, unique `(event_id, label)`)
+- [ ] Indexes on `tenant_id` and `event_id` for the lookups the API will make
+- [ ] Test that foreign keys, status checks, negative prices and the unique seat label reject bad data
 - [ ] Update this file with what was built and any decisions
 
 ## Decisions
@@ -60,3 +61,6 @@ Event is the asset and seat is the item. Both tables are plain data; holds and o
   `status` lives on `seats` for now, and general admission (tickets without seat numbers)
   is deferred. If Redis becomes the source of truth for holds in Phase 11, the column stays
   as the durable record.
+- The seat count of an event is derived from the `seats` rows, not stored on `events`, so it
+  can never drift from the real seats. `tenant_id` is repeated on `seats` so tenant checks
+  need no join.
