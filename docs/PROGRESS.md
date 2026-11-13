@@ -3,7 +3,8 @@
 ## Current position
 - Phase 2 complete
 - Phase 3 complete
-- Next: define Phase 4 (events and seats)
+- Phase 4 planned (events and seats)
+- Next: migration for the `events` table
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -33,6 +34,14 @@ Flyway itself was set up in Phase 2, so this phase starts from the empty baselin
 - [x] Migration: `tenants` table (organizers that own events) (`V2__create_tenants`, uuid primary key with `gen_random_uuid()`, `name`, unique `slug`, `created_at` as `timestamptz`)
 - [x] Migration: `users` table with `tenant_id`, role (ADMIN or BUYER) and a unique email per tenant (`V3__create_users`, foreign key to `tenants`, role as `text` with a check, unique `(tenant_id, email)`, no password hash until the auth phase, email case handled in the app later)
 
+## Phase 4: Events and seats
+Event is the asset and seat is the item. Both tables are plain data; holds and orders come in Phase 5.
+- [ ] Migration: `events` table (`tenant_id` foreign key, `name`, `venue`, `starts_at`, `status` as DRAFT, ON_SALE or CLOSED with a check, index on `tenant_id`)
+- [ ] Migration: `seats` table (`tenant_id` and `event_id` foreign keys, `label`, `price_cents` with a check of 0 or more, `status` as AVAILABLE, HELD or SOLD with a check, `version` for optimistic locking, unique `(event_id, label)`)
+- [ ] Indexes on `tenant_id` and `event_id` for the lookups the API will make
+- [ ] Test that foreign keys, status checks, negative prices and the unique seat label reject bad data
+- [ ] Update this file with what was built and any decisions
+
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
 - Domain: event ticketing. Allocata is the allocation engine, ticketing is its use case.
@@ -48,3 +57,10 @@ Flyway itself was set up in Phase 2, so this phase starts from the empty baselin
 - Folders, `.editorconfig` and similar files are added only when a phase needs them.
 - Local passwords live only in `.env`, which Git ignores. The Postgres and
   RabbitMQ images create their users from it on first start.
+- Phase 4 scope: one price per seat (`price_cents`, integer, no floating point money), seat
+  `status` lives on `seats` for now, and general admission (tickets without seat numbers)
+  is deferred. If Redis becomes the source of truth for holds in Phase 11, the column stays
+  as the durable record.
+- The seat count of an event is derived from the `seats` rows, not stored on `events`, so it
+  can never drift from the real seats. `tenant_id` is repeated on `seats` so tenant checks
+  need no join.
