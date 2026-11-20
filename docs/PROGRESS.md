@@ -3,8 +3,8 @@
 ## Current position
 - Phase 2 complete
 - Phase 3 complete
-- Phase 4 in progress (events and seats)
-- Next: test that bad data is rejected (foreign keys, status checks, negative prices, duplicate seat label)
+- Phase 4 complete
+- Next: Phase 5 (holds and orders)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -39,8 +39,8 @@ Event is the asset and seat is the item. Both tables are plain data; holds and o
 - [x] Migration: `events` table (`tenant_id` foreign key, `name`, `venue`, `starts_at`, `status` as DRAFT, ON_SALE or CLOSED with a check, index on `tenant_id`) (`V4__create_events`, status defaults to DRAFT, `created_at` as `timestamptz`, `idx_events_tenant_id`)
 - [x] Migration: `seats` table (`tenant_id` and `event_id` foreign keys, `label`, `price_cents` with a check of 0 or more, `status` as AVAILABLE, HELD or SOLD with a check, `version` for optimistic locking, unique `(event_id, label)`) (`V5__create_seats`, status defaults to AVAILABLE, `version` defaults to 0, `price_cents` as `integer`)
 - [x] Indexes on `tenant_id` and `event_id` for the lookups the API will make (`V6__create_seat_indexes` adds `idx_seats_tenant_id`; no separate `event_id` index because the unique `(event_id, label)` constraint already has one that starts with `event_id`)
-- [ ] Test that foreign keys, status checks, negative prices and the unique seat label reject bad data
-- [ ] Update this file with what was built and any decisions
+- [x] Test that foreign keys, status checks, negative prices and the unique seat label reject bad data (`SeatConstraintsTest`, 10 tests on a throwaway `postgres:16-alpine` container, checks the Postgres error code of each rejection: 23503 foreign key, 23514 check, 23505 unique; also proves a price of 0 and the same label in a different event are accepted)
+- [x] Update this file with what was built and any decisions (Phase 4 built: `events`, `seats` and their indexes in V4 to V6, all rules enforced by the database and covered by tests; 12 tests pass in total; decisions are listed under Decisions)
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
