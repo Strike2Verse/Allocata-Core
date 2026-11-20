@@ -4,7 +4,8 @@
 - Phase 2 complete
 - Phase 3 complete
 - Phase 4 complete
-- Next: Phase 5 (holds and orders)
+- Phase 5 planned (holds, orders and waitlist), nothing built yet
+- Next: migration for the `seat_holds` table
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -42,6 +43,17 @@ Event is the asset and seat is the item. Both tables are plain data; holds and o
 - [x] Test that foreign keys, status checks, negative prices and the unique seat label reject bad data (`SeatConstraintsTest`, 10 tests on a throwaway `postgres:16-alpine` container, checks the Postgres error code of each rejection: 23503 foreign key, 23514 check, 23505 unique; also proves a price of 0 and the same label in a different event are accepted)
 - [x] Update this file with what was built and any decisions (Phase 4 built: `events`, `seats` and their indexes in V4 to V6, all rules enforced by the database and covered by tests; 12 tests pass in total; decisions are listed under Decisions)
 
+## Phase 5: Holds, orders and waitlist
+Hold is the lease, order is the checkout. All three tables are plain data with rules enforced by the database; the hold logic, expiry and promotion come in later phases.
+- [ ] Migration: `seat_holds` table (`tenant_id`, `seat_id` and `user_id` foreign keys, `status` as ACTIVE, EXPIRED, RELEASED or CONVERTED with a check, `expires_at`, `created_at`)
+- [ ] Partial unique index so a seat has at most one ACTIVE hold, plus an index on `expires_at` for the later expiry sweep
+- [ ] Test that a second active hold on the same seat is rejected, while a new hold is accepted after the first one is released
+- [ ] Migration: `orders` table (`tenant_id`, `user_id`, `seat_id` and `hold_id` foreign keys, `price_cents` with a check of 0 or more, `status` as PENDING, PAID or CANCELLED with a check, unique `hold_id` so one hold makes one order)
+- [ ] Test that foreign keys, status checks, negative prices and a second order for the same hold reject bad data
+- [ ] Migration: `waitlist_entries` table (`tenant_id`, `event_id` and `user_id` foreign keys, `status` as WAITING, PROMOTED or CANCELLED with a check, unique `(event_id, user_id)` so one spot per user per event)
+- [ ] Test that a user cannot join the same event waitlist twice
+- [ ] Update this file with what was built and any decisions
+
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
 - Domain: event ticketing. Allocata is the allocation engine, ticketing is its use case.
@@ -61,6 +73,11 @@ Event is the asset and seat is the item. Both tables are plain data; holds and o
   `status` lives on `seats` for now, and general admission (tickets without seat numbers)
   is deferred. If Redis becomes the source of truth for holds in Phase 11, the column stays
   as the durable record.
+- Phase 5 scope: one hold covers one seat and one order covers one hold, so buying several
+  seats means several orders for now. A cart or order with many items is deferred. The waitlist
+  is per event, not per seat, like the library waitlist was per title. `seats.status` stays as
+  the durable record while `seat_holds` keeps the history of who held what and when.
+- Order `status` has no REFUNDED value yet; refunds and the payment ledger arrive in Phase 30.
 - The seat count of an event is derived from the `seats` rows, not stored on `events`, so it
   can never drift from the real seats. `tenant_id` is repeated on `seats` so tenant checks
   need no join.
