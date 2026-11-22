@@ -5,7 +5,7 @@
 - Phase 3 complete
 - Phase 4 complete
 - Phase 5 planned (holds, orders and waitlist), nothing built yet
-- Next: test that a user cannot join the same event waitlist twice
+- Next: update this file with what was built and any decisions (last Phase 5 item)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -51,7 +51,7 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
 - [x] Migration: `orders` table (`tenant_id`, `user_id`, `seat_id` and `hold_id` foreign keys, `price_cents` with a check of 0 or more, `status` as PENDING, PAID or CANCELLED with a check, unique `hold_id` so one hold makes one order) (`V9__create_orders`, status defaults to PENDING, `price_cents` as `integer`, `created_at` as `timestamptz`)
 - [x] Test that foreign keys, status checks, negative prices and a second order for the same hold reject bad data (`OrderConstraintsTest`, 9 tests on a throwaway `postgres:16-alpine` container: valid order accepted, unknown tenant, user, seat or hold rejected with 23503, unknown status and negative price rejected with 23514, second order for the same hold rejected with 23505, price of 0 accepted)
 - [x] Migration: `waitlist_entries` table (`tenant_id`, `event_id` and `user_id` foreign keys, `status` as WAITING, PROMOTED or CANCELLED with a check, unique `(event_id, user_id)` so one spot per user per event) (`V10__create_waitlist_entries`, status defaults to WAITING, `created_at` as `timestamptz` records join order)
-- [ ] Test that a user cannot join the same event waitlist twice
+- [x] Test that a user cannot join the same event waitlist twice (`WaitlistConstraintsTest`, 7 tests on a throwaway `postgres:16-alpine` container: first entry accepted, same user joining the same event twice rejected with 23505, same user on a different event and a different user on the same event accepted, unknown event or user rejected with 23503, unknown status rejected with 23514)
 - [ ] Update this file with what was built and any decisions
 
 ## Decisions
