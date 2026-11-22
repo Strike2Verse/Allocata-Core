@@ -4,8 +4,8 @@
 - Phase 2 complete
 - Phase 3 complete
 - Phase 4 complete
-- Phase 5 planned (holds, orders and waitlist), nothing built yet
-- Next: update this file with what was built and any decisions (last Phase 5 item)
+- Phase 5 complete
+- Next: plan Phase 6 (outbox and ledger tables)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -52,7 +52,7 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
 - [x] Test that foreign keys, status checks, negative prices and a second order for the same hold reject bad data (`OrderConstraintsTest`, 9 tests on a throwaway `postgres:16-alpine` container: valid order accepted, unknown tenant, user, seat or hold rejected with 23503, unknown status and negative price rejected with 23514, second order for the same hold rejected with 23505, price of 0 accepted)
 - [x] Migration: `waitlist_entries` table (`tenant_id`, `event_id` and `user_id` foreign keys, `status` as WAITING, PROMOTED or CANCELLED with a check, unique `(event_id, user_id)` so one spot per user per event) (`V10__create_waitlist_entries`, status defaults to WAITING, `created_at` as `timestamptz` records join order)
 - [x] Test that a user cannot join the same event waitlist twice (`WaitlistConstraintsTest`, 7 tests on a throwaway `postgres:16-alpine` container: first entry accepted, same user joining the same event twice rejected with 23505, same user on a different event and a different user on the same event accepted, unknown event or user rejected with 23503, unknown status rejected with 23514)
-- [ ] Update this file with what was built and any decisions
+- [x] Update this file with what was built and any decisions (Phase 5 built: `seat_holds`, `orders` and `waitlist_entries` in V7 to V10, all rules enforced by the database and covered by tests; 33 tests pass in total; decisions are listed under Decisions)
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
@@ -81,3 +81,10 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
 - The seat count of an event is derived from the `seats` rows, not stored on `events`, so it
   can never drift from the real seats. `tenant_id` is repeated on `seats` so tenant checks
   need no join.
+- A seat has at most one ACTIVE hold, enforced by a partial unique index (`uq_seat_holds_active_seat`)
+  rather than by app code, so a race between two buyers cannot double-hold a seat. Old holds stay as
+  rows, so `seat_holds` is the history of who held what and when.
+- The database does not check that `tenant_id` on an order, hold or waitlist entry matches the tenant of
+  the seat, event or user it points to. The app must keep them consistent; a database check is deferred.
+- Hold expiry, converting a hold into an order and promoting from the waitlist are not built yet. These
+  tables only store the data and enforce the basic rules.
