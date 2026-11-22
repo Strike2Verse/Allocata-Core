@@ -5,7 +5,7 @@
 - Phase 3 complete
 - Phase 4 complete
 - Phase 5 planned (holds, orders and waitlist), nothing built yet
-- Next: test that a second active hold on the same seat is rejected
+- Next: migration for the `orders` table
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -47,7 +47,7 @@ Event is the asset and seat is the item. Both tables are plain data; holds and o
 Hold is the lease, order is the checkout. All three tables are plain data with rules enforced by the database; the hold logic, expiry and promotion come in later phases.
 - [x] Migration: `seat_holds` table (`tenant_id`, `seat_id` and `user_id` foreign keys, `status` as ACTIVE, EXPIRED, RELEASED or CONVERTED with a check, `expires_at`, `created_at`) (`V7__create_seat_holds`, status defaults to ACTIVE)
 - [x] Partial unique index so a seat has at most one ACTIVE hold, plus an index on `expires_at` for the later expiry sweep (`V8__create_seat_hold_indexes`, `uq_seat_holds_active_seat` and `idx_seat_holds_expires_at`)
-- [ ] Test that a second active hold on the same seat is rejected, while a new hold is accepted after the first one is released
+- [x] Test that a second active hold on the same seat is rejected, while a new hold is accepted after the first one is released (`SeatHoldConstraintsTest`, 5 tests on a throwaway `postgres:16-alpine` container: first active hold accepted, second active hold on the same seat rejected with 23505, new active hold accepted after the first is released, active holds on different seats accepted, many EXPIRED, RELEASED and CONVERTED holds on one seat accepted)
 - [ ] Migration: `orders` table (`tenant_id`, `user_id`, `seat_id` and `hold_id` foreign keys, `price_cents` with a check of 0 or more, `status` as PENDING, PAID or CANCELLED with a check, unique `hold_id` so one hold makes one order)
 - [ ] Test that foreign keys, status checks, negative prices and a second order for the same hold reject bad data
 - [ ] Migration: `waitlist_entries` table (`tenant_id`, `event_id` and `user_id` foreign keys, `status` as WAITING, PROMOTED or CANCELLED with a check, unique `(event_id, user_id)` so one spot per user per event)
