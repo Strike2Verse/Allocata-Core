@@ -5,7 +5,8 @@
 - Phase 3 complete
 - Phase 4 complete
 - Phase 5 complete
-- Next: plan Phase 6 (outbox and ledger tables)
+- Phase 6 planned
+- Next: Phase 6 step 1 (`outbox_events` table)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -54,6 +55,17 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
 - [x] Test that a user cannot join the same event waitlist twice (`WaitlistConstraintsTest`, 7 tests on a throwaway `postgres:16-alpine` container: first entry accepted, same user joining the same event twice rejected with 23505, same user on a different event and a different user on the same event accepted, unknown event or user rejected with 23503, unknown status rejected with 23514)
 - [x] Update this file with what was built and any decisions (Phase 5 built: `seat_holds`, `orders` and `waitlist_entries` in V7 to V10, all rules enforced by the database and covered by tests; 33 tests pass in total; decisions are listed under Decisions)
 
+## Phase 6: Outbox and ledger tables
+The outbox records events to publish later, and the ledger records money as double-entry rows nobody can change. Both are plain data with rules enforced by the database; the relay, publishing and charge logic come in later phases.
+- [ ] Migration: `outbox_events` table (`tenant_id` foreign key, event type, aggregate id, `payload` as `jsonb`, `status` as PENDING, SENT or FAILED with a check, attempt count, `created_at`)
+- [ ] Partial index on PENDING outbox rows so the later relay finds unsent events fast
+- [ ] Test that the outbox rejects an unknown tenant, an unknown status and a payload that is not valid JSON
+- [ ] Migration: `ledger_entries` table (`tenant_id` foreign key, transaction id, account, signed `amount_cents` as integer, `created_at`)
+- [ ] Trigger that blocks UPDATE and DELETE on ledger rows
+- [ ] Constraint trigger that requires the entries of each transaction to add up to zero
+- [ ] Test that update, delete and an unbalanced insert fail, and a balanced pair is accepted
+- [ ] Update this file with what was built and any decisions
+
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
 - Domain: event ticketing. Allocata is the allocation engine, ticketing is its use case.
@@ -86,5 +98,9 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
   rows, so `seat_holds` is the history of who held what and when.
 - The database does not check that `tenant_id` on an order, hold or waitlist entry matches the tenant of
   the seat, event or user it points to. The app must keep them consistent; a database check is deferred.
+- Phase 6 scope: the ledger is a ticketing payment ledger from the start (the library plan called it
+  `fine_ledger_entries`), used for payments and refunds in Phase 30. Amounts are signed integer cents
+  with no floating point money. Mistakes are fixed with a new reversing entry, never an edit. The outbox
+  keeps `tenant_id` like every other table.
 - Hold expiry, converting a hold into an order and promoting from the waitlist are not built yet. These
   tables only store the data and enforce the basic rules.
