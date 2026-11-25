@@ -6,7 +6,8 @@
 - Phase 4 complete
 - Phase 5 complete
 - Phase 6 complete
-- Next: plan Phase 7 (entities, repositories, seed data)
+- Phase 7 planned
+- Next: Phase 7 step 1 (JPA dependency and settings)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -66,6 +67,18 @@ The outbox records events to publish later, and the ledger records money as doub
 - [x] Test that update, delete and an unbalanced insert fail, and a balanced pair is accepted (`LedgerConstraintsTest`, 11 tests on a throwaway `postgres:16-alpine` container: balanced pair and a three-row transaction accepted, a lone row and an unbalanced pair rejected at commit with `LG002` and nothing saved, update, delete and truncate rejected with `LG001`, unknown tenant rejected with 23503, missing account or amount with 23502)
 - [x] Update this file with what was built and any decisions (Phase 6 built: `outbox_events` and `ledger_entries` in V11 to V15, all rules enforced by the database and covered by tests; 52 tests pass in total; decisions are listed under Decisions)
 
+## Phase 7: Entities, repositories and seed data
+The app starts reading and writing the tables from Java. Flyway still owns the schema, so Hibernate only checks that the entities match it. The seed is fake demo data and loads only when asked.
+- [ ] Add Spring Data JPA with Hibernate set to `validate`, so it never changes the schema
+- [ ] Entities for `tenants`, `users`, `events` and `seats` (`Seat` keeps its `version` for optimistic locking)
+- [ ] Entities for `seat_holds`, `orders` and `waitlist_entries`
+- [ ] Entities for `outbox_events` (`payload` as `jsonb`) and `ledger_entries` (insert-only, the database blocks changes)
+- [ ] Repositories with only the lookups the next phases need (seats by event, the active hold on a seat, pending outbox events)
+- [ ] Repository tests with Testcontainers: real saves and queries on the migrated database
+- [ ] Demo seed data (fake tenants, buyers, events and seats) that loads only with a `demo` profile
+- [ ] Test that the seed loads and respects the database rules
+- [ ] Update this file with what was built and any decisions
+
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
 - Domain: event ticketing. Allocata is the allocation engine, ticketing is its use case.
@@ -108,5 +121,9 @@ The outbox records events to publish later, and the ledger records money as doub
 - `price_cents` and `amount_cents` are integer cents, a unit and not a currency type. No currency is stored
   yet, so the app assumes one currency. A `currency` column or `bigint` amounts can be added in a new
   migration if they are ever needed.
+- Phase 7 scope: JPA with Hibernate `ddl-auto: validate`, because Flyway owns the schema. Repositories only
+  get the lookups the next phases need. The master plan's library and lab equipment seeds become one
+  ticketing demo seed. It loads only with a `demo` profile, so tests and real setups stay clean, and
+  every value is fake (for example `buyer1@example.com`).
 - Hold expiry, converting a hold into an order and promoting from the waitlist are not built yet. These
   tables only store the data and enforce the basic rules.
