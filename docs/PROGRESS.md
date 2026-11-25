@@ -5,8 +5,8 @@
 - Phase 3 complete
 - Phase 4 complete
 - Phase 5 complete
-- Phase 6 planned
-- Next: Phase 6 step 1 (`outbox_events` table)
+- Phase 6 complete
+- Next: plan Phase 7 (entities, repositories, seed data)
 
 ## Phase 1: Workstation, Git and project skeleton
 - [x] Checked tools: Java 21.0.12.1 (Temurin), Docker 29.9.2, Git 2.38.1, Node 20.11.1, VS Code 1.143.1
@@ -57,14 +57,14 @@ Hold is the lease, order is the checkout. All three tables are plain data with r
 
 ## Phase 6: Outbox and ledger tables
 The outbox records events to publish later, and the ledger records money as double-entry rows nobody can change. Both are plain data with rules enforced by the database; the relay, publishing and charge logic come in later phases.
-- [ ] Migration: `outbox_events` table (`tenant_id` foreign key, event type, aggregate id, `payload` as `jsonb`, `status` as PENDING, SENT or FAILED with a check, attempt count, `created_at`)
-- [ ] Partial index on PENDING outbox rows so the later relay finds unsent events fast
-- [ ] Test that the outbox rejects an unknown tenant, an unknown status and a payload that is not valid JSON
-- [ ] Migration: `ledger_entries` table (`tenant_id` foreign key, transaction id, account, signed `amount_cents` as integer, `created_at`)
-- [ ] Trigger that blocks UPDATE and DELETE on ledger rows
-- [ ] Constraint trigger that requires the entries of each transaction to add up to zero
-- [ ] Test that update, delete and an unbalanced insert fail, and a balanced pair is accepted
-- [ ] Update this file with what was built and any decisions
+- [x] Migration: `outbox_events` table (`tenant_id` foreign key, event type, aggregate id, `payload` as `jsonb`, `status` as PENDING, SENT or FAILED with a check, attempt count, `created_at`) (`V11__create_outbox_events`, status defaults to PENDING, `attempts` defaults to 0, no foreign key on `aggregate_id` because it can point to different tables)
+- [x] Partial index on PENDING outbox rows so the later relay finds unsent events fast (`V12__create_outbox_indexes`, `idx_outbox_events_pending` on `created_at` where status is PENDING)
+- [x] Test that the outbox rejects an unknown tenant, an unknown status and a payload that is not valid JSON (`OutboxConstraintsTest`, 8 tests on a throwaway `postgres:16-alpine` container: valid event accepted with the PENDING and 0 defaults, SENT and FAILED accepted, unknown tenant rejected with 23503, unknown status with 23514, invalid JSON with 22P02, missing payload, type or aggregate id with 23502)
+- [x] Migration: `ledger_entries` table (`tenant_id` foreign key, transaction id, account, signed `amount_cents` as integer, `created_at`) (`V13__create_ledger_entries`, positive is a debit and negative is a credit, no foreign key on `transaction_id` because it only groups rows)
+- [x] Trigger that blocks UPDATE and DELETE on ledger rows (`V14__block_ledger_changes`, error code `LG001`, a second trigger blocks TRUNCATE because row triggers do not fire for it)
+- [x] Constraint trigger that requires the entries of each transaction to add up to zero (`V15__require_balanced_ledger`, deferred to COMMIT so both rows of a pair can be inserted first, error code `LG002`, index `idx_ledger_entries_transaction_id` on `(tenant_id, transaction_id)`)
+- [x] Test that update, delete and an unbalanced insert fail, and a balanced pair is accepted (`LedgerConstraintsTest`, 11 tests on a throwaway `postgres:16-alpine` container: balanced pair and a three-row transaction accepted, a lone row and an unbalanced pair rejected at commit with `LG002` and nothing saved, update, delete and truncate rejected with `LG001`, unknown tenant rejected with 23503, missing account or amount with 23502)
+- [x] Update this file with what was built and any decisions (Phase 6 built: `outbox_events` and `ledger_entries` in V11 to V15, all rules enforced by the database and covered by tests; 52 tests pass in total; decisions are listed under Decisions)
 
 ## Decisions
 - The repo already existed on GitHub (Strike2Verse/Allocata-Core) with an MIT license.
@@ -102,5 +102,11 @@ The outbox records events to publish later, and the ledger records money as doub
   `fine_ledger_entries`), used for payments and refunds in Phase 30. Amounts are signed integer cents
   with no floating point money. Mistakes are fixed with a new reversing entry, never an edit. The outbox
   keeps `tenant_id` like every other table.
+- The ledger and the outbox only store data and enforce rules. Writing outbox events, relaying them to
+  RabbitMQ and posting payments and refunds to the ledger come in later phases. A ledger transaction must be
+  inserted as one database transaction, because the balance is checked at COMMIT; a lone row fails.
+- `price_cents` and `amount_cents` are integer cents, a unit and not a currency type. No currency is stored
+  yet, so the app assumes one currency. A `currency` column or `bigint` amounts can be added in a new
+  migration if they are ever needed.
 - Hold expiry, converting a hold into an order and promoting from the waitlist are not built yet. These
   tables only store the data and enforce the basic rules.
