@@ -11,6 +11,13 @@ spring:
     password: ${POSTGRES_PASSWORD}
     hikari:
       maximum-pool-size: 5
+  jpa:
+    hibernate:
+      # Flyway owns the schema. Hibernate only checks that entities match the
+      # tables at startup and never creates or changes them.
+      ddl-auto: validate
+    # Do not keep a connection open for the whole web request; the pool is small.
+    open-in-view: false
   flyway:
     # Migrations bypass PgBouncer and go straight to Postgres, because
     # transaction pooling can split a migration across connections.
